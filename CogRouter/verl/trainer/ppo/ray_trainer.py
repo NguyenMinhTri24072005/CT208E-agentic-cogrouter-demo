@@ -266,28 +266,41 @@ def compute_advantage(data: DataProto, adv_estimator, gamma=1.0, lam=1.0, step_a
             )
         data.batch['advantages'] = advantages
         data.batch['returns'] = returns
-    elif adv_estimator == AdvantageEstimator.RLVMR:
-        
-        if 'rlvmr_step_reward' not in data.batch:
-            raise ValueError("RLVMR rewards are not computed. Make sure rlvmr_rewards is added to the batch.")
-        
-        if 'rlvmr_tag_type' not in data.non_tensor_batch:
-            raise ValueError("RLVMR tag types are not computed. Make sure rlvmr_tag_types is added to the batch.")
-            
-        advantages, returns, adv_details = core_rlvmr.compute_rlvmr_outcome_advantage(
-            token_level_rewards=data.batch['token_level_rewards'], 
-            rlvmr_rewards=data.batch['rlvmr_step_reward'], 
-            eos_mask=data.batch['response_mask'],
-            index=data.non_tensor_batch['uid'],
-            step_advantage_w=data.meta_info['rlvmr_step_advantage_w'],
-            mode=data.meta_info['rlvmr_mode'],
-            tag_types=data.non_tensor_batch['rlvmr_tag_type'],
-            traj_id=data.non_tensor_batch['traj_uid'],
+    elif adv_estimator in (AdvantageEstimator.RLVMR, AdvantageEstimator.COPO):
+        if 'rlvmr_step_reward' in data.batch and 'rlvmr_tag_type' in data.non_tensor_batch:
+            advantages, returns, adv_details = core_rlvmr.compute_rlvmr_outcome_advantage(
+                token_level_rewards=data.batch['token_level_rewards'], 
+                rlvmr_rewards=data.batch['rlvmr_step_reward'], 
+                eos_mask=data.batch['response_mask'],
+                index=data.non_tensor_batch['uid'],
+                step_advantage_w=data.meta_info.get('rlvmr_step_advantage_w', 0.5),
+                mode=data.meta_info.get('rlvmr_mode', 'mean_norm'),
+                tag_types=data.non_tensor_batch['rlvmr_tag_type'],
+                traj_id=data.non_tensor_batch.get('traj_uid', None),
             )
-        data.batch['advantages'] = advantages
-        data.batch['returns'] = returns
-        data.meta_info['episode_advantages'] = adv_details['episode_advantages']
-        data.meta_info['step_advantages'] = adv_details['step_advantages']
+            data.batch['advantages'] = advantages
+            data.batch['returns'] = returns
+            if 'episode_advantages' in adv_details:
+                data.meta_info['episode_advantages'] = adv_details['episode_advantages']
+            if 'step_advantages' in adv_details:
+                data.meta_info['step_advantages'] = adv_details['step_advantages']
+        else:
+            advantages, returns, adv_details = core_copo.compute_copo_outcome_advantage(
+                token_level_rewards=data.batch['token_level_rewards'],
+                eos_mask=data.batch['response_mask'],
+                index=data.non_tensor_batch['uid'],
+                thinking_entropies=data.batch.get('thinking_entropy', torch.zeros_like(data.batch['token_level_rewards'])),
+                thinking_costs=data.batch.get('thinking_cost', torch.zeros_like(data.batch['token_level_rewards'])),
+                thinking_group_ids=data.non_tensor_batch.get('thinking_group_id', data.non_tensor_batch['uid']),
+                is_original=data.non_tensor_batch.get('is_original', np.ones(len(data.non_tensor_batch['uid']), dtype=bool)),
+                thinking_weight=data.meta_info.get('copo_thinking_weight', 0.1),
+                thinking_cost_alpha=data.meta_info.get('copo_thinking_cost_alpha', 0.01),
+                cost_max=data.meta_info.get('copo_cost_max', 250),
+                thinking_levels=data.non_tensor_batch.get('thinking_level', None),
+                responses=data.non_tensor_batch.get('response', None),
+            )
+            data.batch['advantages'] = advantages
+            data.batch['returns'] = returns
     else:
         raise NotImplementedError
     return data
@@ -354,7 +367,7 @@ class RayPPOTrainer(object):
             self.use_critic = True
         elif self.config.algorithm.adv_estimator in [
                 AdvantageEstimator.GRPO, AdvantageEstimator.REINFORCE_PLUS_PLUS, AdvantageEstimator.REMAX,
-                AdvantageEstimator.RLOO, AdvantageEstimator.GiGPO, AdvantageEstimator.RLVMR
+                AdvantageEstimator.RLOO, AdvantageEstimator.GiGPO, AdvantageEstimator.RLVMR, AdvantageEstimator.COPO
         ]:
             self.use_critic = False
         else:
