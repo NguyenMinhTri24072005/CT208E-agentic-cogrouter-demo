@@ -174,10 +174,12 @@ import random
 
 random.shuffle(trajs)
 
+import os
 import openai
 
-openai.api_key = "PZV47hdixAvMq1U4CxPMb1mk6xGpOHOk"
-openai.api_base = "https://gptproxy.llmpaas.woa.com/v1"
+openai.api_key = os.environ.get("OPENAI_API_KEY", "")
+if os.environ.get("OPENAI_BASE_URL"):
+    openai.api_base = os.environ.get("OPENAI_BASE_URL")
 
 
 def llm(prompt, model="gpt-4o-nlp", temperature=0.0, max_tokens=1024, retries=3):
