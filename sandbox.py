@@ -4,7 +4,7 @@ import os
 def execute_python_code(code: str, timeout: int = 5) -> str: 
     """công cụ thực thi code và bắt phản hồi từ môi trường"""
     # tạo một file python tạm thời để chạy code
-    with tempfile.NamedTempraryFile(mode='w', suffix='.py', delete=False) as temp_file:
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp_file:
         temp_file.write(code)
         temp_path = temp_file.name
     try: 

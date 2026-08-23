@@ -3,6 +3,7 @@ import re
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from sandbox import execute_python_code
 
+
 SYSTEM_PROMPT = """Bạn là một Tác tử Lập trình. Trước khi viết code, hãy chọn Cấp độ nhận thức (Cognitive Level):
 - [L1]: Phản xạ nhanh (Chỉ viết code ngay, không cần suy luận).
 - [L2]: Quy tắc mẫu (Suy luận ngắn gọn 1 câu).
