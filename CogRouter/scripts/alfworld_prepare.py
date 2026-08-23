@@ -139,7 +139,11 @@ openai.api_key = os.environ.get("OPENAI_API_KEY", "")
 if os.environ.get("OPENAI_BASE_URL"):
     openai.api_base = os.environ.get("OPENAI_BASE_URL")
 
-def llm(prompt, model="gpt-4o-nlp", temperature=0.0, max_tokens=1024, retries=3):
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+
+def llm(prompt, model=None, temperature=0.0, max_tokens=1024, retries=3):
+    if model is None:
+        model = OPENAI_MODEL
     for attempt in range(retries):
         try:
             response = openai.ChatCompletion.create(
@@ -153,7 +157,9 @@ def llm(prompt, model="gpt-4o-nlp", temperature=0.0, max_tokens=1024, retries=3)
             time.sleep(2 ** attempt)
     return None
 
-def llm_json(prompt, model="gpt-4o-nlp", temperature=0.0, max_tokens=1024, retries=5):
+def llm_json(prompt, model=None, temperature=0.0, max_tokens=1024, retries=5):
+    if model is None:
+        model = OPENAI_MODEL
     for attempt in range(retries):
         try:
             response = openai.ChatCompletion.create(
