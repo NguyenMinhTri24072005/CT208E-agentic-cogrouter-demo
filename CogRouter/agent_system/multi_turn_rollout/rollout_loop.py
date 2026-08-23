@@ -14,8 +14,16 @@ from agent_system.environments import EnvironmentManagerBase
 from typing import List, Dict, Tuple, Any, Optional, Union
 from collections import defaultdict
 
-from rlvmr import core_rlvmr as core_mcrl
-from copo import core_copo
+try:
+    from copo import core_copo as core_mcrl
+    from copo import core_copo
+except ImportError:
+    try:
+        from rlvmr import core_rlvmr as core_mcrl
+        from rlvmr import core_rlvmr as core_copo
+    except ImportError:
+        core_mcrl = None
+        core_copo = None
 
 
 class TrajectoryCollector:

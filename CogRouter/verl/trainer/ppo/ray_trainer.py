@@ -44,7 +44,16 @@ from verl.utils.tracking import ValidationGenerationsLogger
 from torch.utils.data import RandomSampler, SequentialSampler
 from torchdata.stateful_dataloader import StatefulDataLoader
 from gigpo import core_gigpo
-from rlvmr import core_rlvmr
+try:
+    from copo import core_copo
+    from copo import core_copo as core_rlvmr
+except ImportError:
+    try:
+        from rlvmr import core_rlvmr
+        core_copo = core_rlvmr
+    except ImportError:
+        core_rlvmr = None
+        core_copo = None
 from agent_system.multi_turn_rollout import TrajectoryCollector, adjust_batch
 
 WorkerType = Type[Worker]
@@ -74,6 +83,7 @@ class AdvantageEstimator(str, Enum):
     RLOO = 'rloo'
     GiGPO = 'gigpo'
     RLVMR = 'rlvmr'
+    COPO = 'copo'
 
 
 @dataclass
