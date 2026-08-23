@@ -1,0 +1,4 @@
+transformers>=4.45.0
+bitsandbytest>=0.43.0
+accelerate>=0.30.0
+torch
