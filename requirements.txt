@@ -1,4 +1,4 @@
 transformers>=4.45.0
-bitsandbytest>=0.43.0
+bitsandbytes>=0.46.1
 accelerate>=0.30.0
 torch
