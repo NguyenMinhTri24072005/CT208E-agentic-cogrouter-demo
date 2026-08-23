@@ -185,6 +185,14 @@ algorithm:
   gigpo:
     step_advantage_w: 1.0
     mode: "mean_norm" # "mean_norm" or "mean_std_norm"
+  copo:
+    enable: False
+    thinking_weight: 0.1
+    thinking_cost_alpha: 0.01
+    cost_max: 250
+    mode: "mean_norm"
+    generation_chunk_size: 256
+    confidence_chunk_size: 2048
   rlvmr:
     enable: False
     planning_reward: 1.0  
@@ -195,6 +203,9 @@ algorithm:
   filter_groups: # DAPO from https://arxiv.org/abs/2503.14476
     enable: False
     max_num_gen_batches: 10
+
+copo_save_cases: True
+copo_max_cases_per_epoch: 20
 
 trainer:
   balance_batch: True
