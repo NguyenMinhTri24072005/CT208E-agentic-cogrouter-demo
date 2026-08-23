@@ -1,6 +1,6 @@
 import torch
 import re
-from transformers import AutoModeForCauseLLM, AutoTokenizer, BitsAndBytestConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from sandbox import execute_python_code
 
 SYSTEM_PROMPT = """Bạn là một Tác tử Lập trình. Trước khi viết code, hãy chọn Cấp độ nhận thức (Cognitive Level):
@@ -21,13 +21,13 @@ def run_agent_loop(task: str, max_steps: int = 3):
     model_id = "Qwen/Qwen2.5-Coder-7B-Instruct"
     print('đang nạp mô hình')
     
-    bnb_config = BitsAndBytestConfig(
+    bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.float16
     )
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCauseLLM.from_pretrained(model_id, quantization_config=bnb_config, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=bnb_config, device_map="auto")
     
     message = [
         {"role": "system", "content":SYSTEM_PROMPT},
