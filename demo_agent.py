@@ -1,6 +1,6 @@
 import torch
 import re
-from transfromers import AutoModeForCauseLLM, AutoTokenizer, BitsAndBytestConfig
+from transformers import AutoModeForCauseLLM, AutoTokenizer, BitsAndBytestConfig
 from sandbox import execute_python_code
 
 SYSTEM_PROMPT = """Bạn là một Tác tử Lập trình. Trước khi viết code, hãy chọn Cấp độ nhận thức (Cognitive Level):
