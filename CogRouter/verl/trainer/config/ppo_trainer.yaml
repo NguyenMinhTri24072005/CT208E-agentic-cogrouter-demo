@@ -240,6 +240,8 @@ env:
   alfworld:
     generalization_level: 0
     meta_think: False
+    action_only: False
   sciworld:
     generalization_level: 0
     meta_think: False
+    action_only: False

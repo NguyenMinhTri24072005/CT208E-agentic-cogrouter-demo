@@ -538,9 +538,9 @@ def make_envs(config):
             _envs = build_alfworld_envs(alf_train_config_path, config.env.seed, config.data.train_batch_size, group_n, is_train=True)
             _val_envs = build_alfworld_envs(alf_test_config_path, config.env.seed + 1000, config.data.val_batch_size, 1, is_train=False)
         
-        if config.env.alfworld.meta_think:
+        if config.env.alfworld.get('meta_think', False):
             projection_f = partial(alfworld_projection_mcrl)
-        elif config.env.alfworld.action_only:
+        elif config.env.alfworld.get('action_only', False):
             projection_f = partial(alfworld_projection_nothink)
         else:
             projection_f = partial(alfworld_projection)
