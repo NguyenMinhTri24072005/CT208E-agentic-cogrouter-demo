@@ -58,9 +58,9 @@ def run_agent_loop(task: str, max_steps: int = 3):
                 print("\n[Môi trường phản hồi]:\nCode chạy thành công, kết thúc vòng lặp.")
                 break
             else:
-                message.append({"role": "user", "content": f"Code của bạn sinh ra lỗ. Hãy đổi sang Level 3 hoặc 4 để phân tích và sửa lại.\n{observation}"})
+                message.append({"role": "user", "content": f"Code của bạn sinh ra lỗi khi chạy trong môi trường:\n{observation}\nHãy chuyển sang Level 3 (Lập luận điều kiện) hoặc Level 4 (Chiến lược) để phân tích lỗi và viết lại code khắc phục hoàn chỉnh."})
         else:
-            print("Không tìm thấy hành động hợp lệ. Dừng")
+            print("Không tìm thấy khối mã Python ```python ... ``` hợp lệ. Dừng.")
             break
         
 if __name__ == "__main__":
