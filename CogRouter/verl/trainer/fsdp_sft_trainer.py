@@ -1,3 +1,4 @@
+﻿import verl.utils.model
 # Copyright 2024 Bytedance Ltd. and/or its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -203,7 +204,7 @@ class FSDPSFTTrainer(object):
             self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(local_model_path,
                                                                                config=config,
                                                                                torch_dtype=torch.float32,
-                                                                               attn_implementation='flash_attention_2',
+                                                                               attn_implementation=verl.utils.model.get_best_attn_implementation(),
                                                                                trust_remote_code=trust_remote_code)
 
             if self.use_remove_padding or self.config.ulysses_sequence_parallel_size > 1:

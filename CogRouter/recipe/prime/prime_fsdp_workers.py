@@ -1,3 +1,4 @@
+﻿import verl.utils.model
 # Copyright 2024 PRIME team and/or its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,7 +123,7 @@ class PRIMERewardModelWorker(Worker):
             reward_module = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=local_path,
                                                                  torch_dtype=torch_dtype,
                                                                  config=reward_model_config,
-                                                                 attn_implementation='flash_attention_2',
+                                                                 attn_implementation=verl.utils.model.get_best_attn_implementation(),
                                                                  trust_remote_code=trust_remote_code)
 
             if config.model.get('use_remove_padding', False) or self.ulysses_sequence_parallel_size > 1:
@@ -167,7 +168,7 @@ class PRIMERewardModelWorker(Worker):
                 config.model.ref_path),
                                                               torch_dtype=torch_dtype,
                                                               config=reward_model_config,
-                                                              attn_implementation='flash_attention_2',
+                                                              attn_implementation=verl.utils.model.get_best_attn_implementation(),
                                                               trust_remote_code=trust_remote_code)
 
             # some parameters may not in torch_dtype

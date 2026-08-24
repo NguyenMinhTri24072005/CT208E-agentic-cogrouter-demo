@@ -18,6 +18,13 @@ import os
 import warnings
 from typing import Dict, Type, Optional
 
+def get_best_attn_implementation():
+    try:
+        import importlib.metadata
+        importlib.metadata.version("flash_attn")
+        return "flash_attention_2"
+    except Exception:
+        return "sdpa"
 import numpy as np
 import torch
 from torch import nn
